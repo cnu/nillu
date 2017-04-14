@@ -27,6 +27,7 @@ class Entry(db.Model):
     date = db.Column(db.Date, server_default=func.current_date())
     time_created = db.Column(db.DateTime, server_default=func.current_timestamp())
     time_updated = db.Column(db.DateTime, onupdate=func.current_timestamp())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', backref=db.backref('entries', lazy='dynamic'))
 
     def __init__(self, text, entry_type, user):
