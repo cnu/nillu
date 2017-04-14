@@ -25,7 +25,7 @@ def login():
         # user should be an instance of your `User` class
         if user and user.check_password(form.password.data):
             login_user(user)
-            flash('Logged in Successfully.')
+            flash('Logged in Successfully.', 'success')
 
             next = request.args.get('next')
             # is_safe_url should check if the url is safe for redirects.
@@ -34,5 +34,5 @@ def login():
                 return abort(400)
             return redirect(next or url_for('index'))
         else:
-            flash('Wrong email/password.')
+            flash('Wrong email/password.', 'danger')
     return render_template('login.html', form=form)
