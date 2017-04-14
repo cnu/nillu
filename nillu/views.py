@@ -23,7 +23,7 @@ def login():
         user = User.get_by_email(form.email.data)
         # Login and validate the user.
         # user should be an instance of your `User` class
-        if user.check_password(form.password.data):
+        if user and user.check_password(form.password.data):
             login_user(user)
             flash('Logged in Successfully.')
 
