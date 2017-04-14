@@ -47,7 +47,6 @@ def load_user(user_id):
     return User.get(user_id)
 
 
-
 class Entry(db.Model):
     __tablename__ = 'entries'
 
