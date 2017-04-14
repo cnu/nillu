@@ -22,6 +22,11 @@ class User(db.Model):
         u = cls.query.get(user_id)
         return u
 
+    @classmethod
+    def get_by_email(cls, email):
+        q = cls.query.filter_by(email=email)
+        return q.one_or_none()
+    
 
 class Entry(db.Model):
     __tablename__ = 'entries'
