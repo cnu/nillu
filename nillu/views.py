@@ -1,5 +1,5 @@
 from flask import flash, request, abort, redirect, render_template, url_for
-from flask_login import login_user, login_required
+from flask_login import login_user, login_required, logout_user
 
 from nillu import app
 from nillu.forms import LoginForm
@@ -36,3 +36,11 @@ def login():
         else:
             flash('Wrong email/password.', 'danger')
     return render_template('login.html', form=form)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    """Logout the user and redirect back to the login page."""
+    logout_user()
+    return redirect('login')
