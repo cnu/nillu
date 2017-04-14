@@ -42,6 +42,7 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
@@ -58,6 +59,8 @@ class Entry(db.Model):
     time_updated = db.Column(db.DateTime, onupdate=func.current_timestamp())
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', backref=db.backref('entries', lazy='dynamic'))
+
+    __table_args__ = (db.UniqueConstraint('type', 'user_id', 'date', name='_type_user_date_uc'), )
 
     def __init__(self, text, entry_type, user):
         self.text = text
