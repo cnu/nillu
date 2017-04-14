@@ -1,5 +1,10 @@
+from flask_bcrypt import Bcrypt
 from sqlalchemy.sql import func
+
+from nillu import app
 from nillu.database import db
+
+bcrypt = Bcrypt(app)
 
 
 class User(db.Model):
@@ -13,7 +18,7 @@ class User(db.Model):
 
     def __init__(self, name, password, email, role):
         self.name = name
-        self.password = password
+        self.password = bcrypt.generate_password_hash(password)
         self.email = email
         self.role = role
 
@@ -29,7 +34,13 @@ class User(db.Model):
     def get_by_email(cls, email):
         q = cls.query.filter_by(email=email)
         return q.one_or_none()
-    
+
+    def update_password(self, new_password):
+        self.password = bcrypt.generate_password_hash(new_password)
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+
 
 class Entry(db.Model):
     __tablename__ = 'entries'
