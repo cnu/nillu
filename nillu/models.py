@@ -17,6 +17,11 @@ class User(db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.name)
 
+    @classmethod
+    def get(cls, user_id):
+        u = cls.query.get(user_id)
+        return u
+
 
 class Entry(db.Model):
     __tablename__ = 'entries'
