@@ -1,13 +1,14 @@
 from flask_bcrypt import Bcrypt
+from flask_login import UserMixin
 from sqlalchemy.sql import func
 
-from nillu import app
+from nillu import app, login_manager
 from nillu.database import db
 
 bcrypt = Bcrypt(app)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -40,6 +41,11 @@ class User(db.Model):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
+
 
 
 class Entry(db.Model):
