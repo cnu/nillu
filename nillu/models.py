@@ -1,20 +1,14 @@
-import datetime
-from sqlalchemy import Column, Integer, String
-from sqlalchemy import Date
-from sqlalchemy import DateTime
-from sqlalchemy import Enum
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
-
-from nillu.database import Base
+from nillu.database import db
 
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    email = Column(String(120), unique=True)
-    role = Column(Enum('developer', 'non-developer'))
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    email = db.Column(db.String(120), unique=True)
+    role = db.Column(db.Enum('developer', 'non-developer'))
 
     def __init__(self, name=None, email=None):
         self.name = name
@@ -24,15 +18,16 @@ class User(Base):
         return '<User {}>'.format(self.name)
 
 
-class Entry(Base):
+class Entry(db.Model):
     __tablename__ = 'entries'
-    id = Column(Integer, primary_key=True)
-    text = Column(String)
-    type = Column(Enum('todo', 'done', 'blocking'))
-    date = Column(Date, server_default=func.current_date())
-    time_created = Column(DateTime, server_default=func.current_timestamp())
-    time_updated = Column(DateTime, onupdate=func.current_timestamp())
-    user = relationship('User', back_populates='entries')
+
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String)
+    type = db.Column(db.Enum('todo', 'done', 'blocking'))
+    date = db.Column(db.Date, server_default=func.current_date())
+    time_created = db.Column(db.DateTime, server_default=func.current_timestamp())
+    time_updated = db.Column(db.DateTime, onupdate=func.current_timestamp())
+    user = db.relationship('User', backref=db.backref('entries', lazy='dynamic'))
 
     def __init__(self, text, entry_type, user):
         self.text = text
