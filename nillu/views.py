@@ -14,7 +14,7 @@ def index():
     return 'Hello World!'
 
 
-@app.route('/entries/<path:date>/')
+@app.route('/entry/<path:date>/')
 @login_required
 def entries(date):
     """Display the entries for a particular date
