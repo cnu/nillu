@@ -29,5 +29,11 @@ class LoginTestCase(BaseTestCase):
         rv = self.logout()
         assert b'You have been logged out.' in rv.data
 
+    def test_incorrect_logout(self):
+        """Test if a non-logged in user is shows a login page."""
+        rv = self.logout()
+        assert b'Please sign in' in rv.data
+
+
 if __name__ == '__main__':
     unittest.main()
