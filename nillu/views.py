@@ -55,7 +55,7 @@ def login():
         # Login and validate the user.
         # user should be an instance of your `User` class
         if user and user.check_password(form.password.data):
-            login_user(user)
+            login_user(user, remember=form.remember_me.data)
             flash('Logged in Successfully.', 'success')
 
             next = request.args.get('next')
