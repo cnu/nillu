@@ -16,7 +16,7 @@ def index():
 
 @app.route('/entry/<path:date>/')
 @login_required
-def entries(date):
+def entry(date):
     """Display the entries for a particular date
 
     :param date: the date for which to get the entries
