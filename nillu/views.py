@@ -11,7 +11,7 @@ from nillu.utils import is_safe_url
 @app.route('/')
 @login_required
 def index():
-    return 'Hello World!'
+    return render_template('index.html')
 
 
 @app.route('/entry/<path:date>/')
