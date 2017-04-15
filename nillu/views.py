@@ -31,7 +31,8 @@ def entry(date):
         date_obj, resolution = parse_date(date)
         if resolution == 'day':
             # Use only 1 day
-            q = Entry.query.filter_by(date=date_obj).order_by(Entry.user_id, Entry.type)
+            entries = Entry.query.filter_by(date=date_obj).order_by(Entry.user_id, Entry.type)
+            return render_template('entry.html', entries=entries)
     except FutureDateException:
         flash("Great Scott! Your flux capacitor is broken.", 'warning')
         return redirect(url_for('entries', date='today'))
