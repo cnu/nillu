@@ -61,7 +61,7 @@ def parse_date(date: str):
                 date_obj = today
                 resolution = 'day'
 
-            if date_obj - today > 0:
+            if date_obj - today > datetime.timedelta(0):
                 raise FutureDateException("Trying to edit the future.")
 
     except ValueError:
