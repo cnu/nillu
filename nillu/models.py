@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
 
     def __init__(self, name, password, email, role):
         self.name = name
-        self.password = bcrypt.generate_password_hash(password)
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
         self.email = email
         self.role = role
 
@@ -37,7 +37,7 @@ class User(db.Model, UserMixin):
         return q.one_or_none()
 
     def update_password(self, new_password):
-        self.password = bcrypt.generate_password_hash(new_password)
+        self.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
