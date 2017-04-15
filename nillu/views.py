@@ -92,4 +92,5 @@ def login():
 def logout():
     """Logout the user and redirect back to the login page."""
     logout_user()
+    flash('You have been logged out.', 'success')
     return redirect('login')
