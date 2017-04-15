@@ -11,6 +11,14 @@ def initdb_command():
     print('Initialized the database.')
 
 
+@app.cli.command('dropdb')
+def dropdb_command():
+    """Creates the database tables."""
+    from nillu.database import db
+    db.drop_all()
+    print('Dropped all tables.')
+
+
 @app.cli.command('list_routes')
 def list_routes():
     import urllib.parse
