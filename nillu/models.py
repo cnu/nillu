@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(50))
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(120))
-    role = db.Column(db.Enum('developer', 'non-developer'))
+    role = db.Column(db.Enum('developer', 'non-developer', name='user_roles'))
 
     def __init__(self, name, password, email, role):
         self.name = name
@@ -53,7 +53,7 @@ class Entry(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String)
-    type = db.Column(db.Enum('todo', 'done', 'blocking'))
+    type = db.Column(db.Enum('done', 'todo', 'blocking', name='entry_types'))
     date = db.Column(db.Date, server_default=func.current_date())
     time_created = db.Column(db.DateTime, server_default=func.current_timestamp())
     time_updated = db.Column(db.DateTime, onupdate=func.current_timestamp())
