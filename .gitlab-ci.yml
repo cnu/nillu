@@ -1,5 +1,5 @@
 test:
-  image: python:3.6-alpine
+  image: python:3.6
   script:
   - apt-get update -qy
   - apt-get install -y python-dev python-pip
