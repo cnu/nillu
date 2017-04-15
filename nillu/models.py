@@ -9,6 +9,10 @@ bcrypt = Bcrypt(app)
 
 
 class User(db.Model, UserMixin):
+    """User model class
+
+    Uses flask_login's UserMixin to implement default properties and methods
+    """
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -28,27 +32,36 @@ class User(db.Model, UserMixin):
 
     @classmethod
     def get(cls, user_id):
+        """Get a user object from a user_id"""
         u = cls.query.get(user_id)
         return u
 
     @classmethod
     def get_by_email(cls, email):
+        """Get a user object from an email address"""
         q = cls.query.filter_by(email=email)
         return q.one_or_none()
 
     def update_password(self, new_password):
+        """Update the password of a user with a new_password"""
         self.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
 
     def check_password(self, password):
+        """Check if the user's password matches with the given password"""
         return bcrypt.check_password_hash(self.password, password)
 
 
 @login_manager.user_loader
 def load_user(user_id):
+    """Flask Login's user_loader function"""
     return User.get(user_id)
 
 
 class Entry(db.Model):
+    """Entry model class
+
+    Each user has three rows on entries for a date - done, todo, blocking.
+    """
     __tablename__ = 'entries'
 
     id = db.Column(db.Integer, primary_key=True)

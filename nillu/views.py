@@ -10,6 +10,7 @@ from nillu.utils import is_safe_url, DateParseException, FutureDateException, pa
 @app.route('/')
 @login_required
 def index():
+    """Index view function"""
     return render_template('index.html')
 
 
@@ -41,6 +42,10 @@ def entry(date):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Login view function
+
+    accepts both GET and POST to display the login page and accept the login info
+    """
     # Here we use a class of some kind to represent and validate our
     # client-side form data. For example, WTForms is a library that will
     # handle this for us, and we use a custom LoginForm to validate.

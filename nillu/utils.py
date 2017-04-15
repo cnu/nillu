@@ -5,6 +5,10 @@ from flask import request, url_for
 
 
 def is_safe_url(target):
+    """Checks if the url is safe and part of the same host.
+
+    from http://flask.pocoo.org/snippets/62/ for flask-login's ?next url redirect
+    """
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and \
