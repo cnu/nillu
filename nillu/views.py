@@ -1,11 +1,10 @@
-import datetime
 from flask import flash, request, abort, redirect, render_template, url_for
 from flask_login import login_user, login_required, logout_user
 
 from nillu import app
 from nillu.forms import LoginForm
-from nillu.models import User
-from nillu.utils import is_safe_url
+from nillu.models import User, Entry
+from nillu.utils import is_safe_url, DateParseException, FutureDateException, parse_date
 
 
 @app.route('/')
@@ -27,37 +26,15 @@ def entry(date):
     Based on which format is used, the corresponding entries for the
     time period is fetched and displayed.
     """
-    today = datetime.date.today()
     try:
-        if date.lower() == 'today':
-            date_obj = today
-            resolution = 'day'
-        elif date.lower() == 'yesterday':
-            date_obj = today - datetime.timedelta(days=1)
-            resolution = 'day'
-        else:
-            slash_count = date.count('/')
-            if slash_count == 2:
-                # year/month/date format
-                date_obj = datetime.datetime.strptime(date, '%Y/%m/%d').date()
-                resolution = 'day'
-            elif slash_count == 1:
-                # year/month format
-                date_obj = datetime.datetime.strptime(date, '%Y/%m').date()
-                resolution = 'month'
-            elif slash_count == 0:
-                # year format
-                date_obj = datetime.datetime.strptime(date, '%Y').date()
-                resolution = 'year'
-            else:
-                # fallback to today
-                date_obj = today
-                resolution = 'day'
-
-            if date_obj - today > 0:
-                flash("Great Scott! Your flux capacitor is broken.", 'warning')
-                return redirect(url_for('entries', date='today'))
-    except ValueError:
+        date_obj, resolution = parse_date(date)
+        if resolution == 'day':
+            # Use only 1 day
+            q = Entry.query.filter_by(date=date_obj).order_by(Entry.user_id, Entry.type)
+    except FutureDateException:
+        flash("Great Scott! Your flux capacitor is broken.", 'warning')
+        return redirect(url_for('entries', date='today'))
+    except DateParseException:
         flash("Couldn't get entries for specified date.", 'danger')
         return redirect(url_for('entries', date='today'))
 
