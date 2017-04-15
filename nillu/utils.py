@@ -19,7 +19,21 @@ class DateParseException(Exception):
     pass
 
 
-def parse_date(date):
+def parse_date(date: str):
+    """Given a date string parse it and return back a date object and resolution.
+
+    date is always a string.
+    Could be 'today' or 'yesterday' or 'YYYY/MM/DD' or 'YYYY/MM' or 'YYYY'
+    if it is today or yesterday or YYYY/MM/DD format, resolution is 'day'
+        meaning we need to get entries for that particular date.
+    if it is 'YYYY/MM' resolution is 'month'
+        meaning we need to get entries for the entire month.
+    if it is 'YYYY' resolution is 'year'
+        meaning we need to get entries for the entire year.
+
+    If the date is in future, it throws a FutureDateException, as we don't want to edit for future entries.
+    and if the date is not parseable, it throws a DateParseException.
+    """
     today = datetime.date.today()
     try:
         if date.lower() == 'today':
