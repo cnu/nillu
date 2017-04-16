@@ -29,6 +29,9 @@ def entry(date):
     """
     try:
         date_obj, resolution = parse_date(date)
+        if date in ('today', 'yesterday'):
+            return redirect(url_for('entry', date=date_obj.strftime('%Y/%m/%d')))
+
         if resolution == 'day':
             # Use only 1 day
             entries = Entry.query.filter_by(date=date_obj).order_by(Entry.user_id, Entry.type)
