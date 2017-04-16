@@ -1,3 +1,5 @@
+import datetime
+
 from nillu import app
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy(app)
@@ -26,10 +28,27 @@ def init_db():
         u2e2 = nillu.models.Entry(text='user 2 entry - todo', entry_type='todo', user=u2)
         u2e3 = nillu.models.Entry(text='user 2 entry - blocking', entry_type='blocking', user=u2)
 
+        ysday = datetime.date.today() - datetime.timedelta(days=1)
+        u1e1_y = nillu.models.Entry(text='user 1 entry - done - ysday', entry_type='done', user=u1, date=ysday)
+        u1e2_y = nillu.models.Entry(text='user 1 entry - todo - ysday', entry_type='todo', user=u1, date=ysday)
+        u1e3_y = nillu.models.Entry(text='user 1 entry - blocking - ysday', entry_type='blocking', user=u1, date=ysday)
+
+        u2e1_y = nillu.models.Entry(text='user 2 entry - done - ysday', entry_type='done', user=u2, date=ysday)
+        u2e2_y = nillu.models.Entry(text='user 2 entry - todo - ysday', entry_type='todo', user=u2, date=ysday)
+        u2e3_y = nillu.models.Entry(text='user 2 entry - blocking - ysday', entry_type='blocking', user=u2, date=ysday)
+
         db.session.add(u1e1)
         db.session.add(u1e2)
         db.session.add(u1e3)
         db.session.add(u2e1)
         db.session.add(u2e2)
         db.session.add(u2e3)
+
+        db.session.add(u1e1_y)
+        db.session.add(u1e2_y)
+        db.session.add(u1e3_y)
+        db.session.add(u2e1_y)
+        db.session.add(u2e2_y)
+        db.session.add(u2e3_y)
+
         db.session.commit()
