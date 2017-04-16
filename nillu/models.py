@@ -75,10 +75,12 @@ class Entry(db.Model):
 
     __table_args__ = (db.UniqueConstraint('type', 'user_id', 'date', name='_type_user_date_uc'), )
 
-    def __init__(self, text, entry_type, user):
+    def __init__(self, text, entry_type, user, date=None):
         self.text = text
         self.type = entry_type
         self.user = user
+        if date:
+            self.date = date
 
     def __repr__(self):
         return '<Entry {}:{}:{}'.format(self.user.name, self.type, self.text[:50])
