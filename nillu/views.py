@@ -11,7 +11,7 @@ from nillu.utils import is_safe_url, DateParseException, FutureDateException, pa
 @login_required
 def index():
     """Index view function"""
-    return render_template('index.html')
+    return redirect(url_for('entry', date='today'))
 
 
 @app.route('/entry/<path:date>/')
