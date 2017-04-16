@@ -16,25 +16,7 @@ def index():
     return redirect(url_for('entry', date='today'))
 
 
-@app.route('/entry/<path:date>/edit/', methods=['GET', 'POST'])
-@login_required
-def entry_edit(date):
-    date_obj, resolution = parse_date(date)
-    if request.method == 'POST':
-        for k, v in request.form.items():
-            user_id, entry_type = k.split('_')
-            user = User.get(user_id=user_id)
-            e = Entry(text=v, entry_type=entry_type, user=user, date=date_obj)
-            db.session.add(e)
-        db.session.commit()
-        return redirect(url_for('entry', date=date))
-    else:
-        users = User.query.filter_by(role='developer').order_by(User.name)
-        entry_types = ('done', 'todo', 'blocking')
-        return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users, entry_types=entry_types)
-
-
-@app.route('/entry/<path:date>/')
+@app.route('/entry/<path:date>/', methods=['GET', 'POST'])
 @login_required
 def entry(date):
     """Display the entries for a particular date
@@ -49,6 +31,15 @@ def entry(date):
     """
     try:
         date_obj, resolution = parse_date(date)
+        if request.method == 'POST':
+            for k, v in request.form.items():
+                user_id, entry_type = k.split('_')
+                user = User.get(user_id=user_id)
+                e = Entry(text=v, entry_type=entry_type, user=user, date=date_obj)
+                db.session.add(e)
+            db.session.commit()
+            return redirect(url_for('entry', date=date))
+
         if date in ('today', 'yesterday'):
             return redirect(url_for('entry', date=date_obj.strftime('%Y/%m/%d')))
 
@@ -56,7 +47,11 @@ def entry(date):
             # Use only 1 day
             entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
             if entries.count() == 0:
-                return redirect(url_for('entry_edit', date=date_obj.strftime('%Y/%m/%d')))
+                users = User.query.filter_by(role='developer').order_by(User.name)
+                entry_types = ('done', 'todo', 'blocking')
+                return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users,
+                                       entry_types=entry_types)
+                # return redirect(url_for('entry_edit', date=date_obj.strftime('%Y/%m/%d')))
             user_order = set()
             date_order = set()
             result = defaultdict(lambda: defaultdict(list))
