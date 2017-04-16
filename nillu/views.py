@@ -55,6 +55,8 @@ def entry(date):
         if resolution == 'day':
             # Use only 1 day
             entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
+            if entries.count() == 0:
+                return redirect(url_for('entry_edit', date=date_obj.strftime('%Y/%m/%d')))
             user_order = set()
             date_order = set()
             result = defaultdict(lambda: defaultdict(list))
