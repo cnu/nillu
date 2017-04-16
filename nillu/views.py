@@ -1,8 +1,9 @@
 from collections import defaultdict
 from flask import flash, request, abort, redirect, render_template, url_for
+from flask_mail import Message
 from flask_login import login_user, login_required, logout_user
 
-from nillu import app
+from nillu import app, mail
 from nillu.database import db
 from nillu.forms import LoginForm
 from nillu.models import User, Entry
@@ -30,6 +31,68 @@ def process_entries_query(entries):
     date_order = sorted(list(date_order))
     user_order = sorted(list(user_order))
     return result, date_order, user_order
+
+
+def construct_email_text(result):
+    subj_tmpl = '''Backend Standup - {}'''
+    final_tmpl = '''
+Backend Standup - {}
+{}
+    '''
+    user_entry_tmpl = '''
+{}
+Done:
+{}
+Todo:
+{}
+Blocking:
+{}
+    '''
+    final_html_tmpl = '''
+Backend Standup - <b>{}</b><br/><br/>
+{}
+        '''
+    user_entry_html_tmpl = '''
+<h3>{}</h3>
+<p>
+<b>Done:</b><br/>
+{}
+</p>
+<p>
+<b>Todo:</b><br/>
+{}
+</p>
+<p>
+<b>Blocking:</b><br/>
+{}
+</p>
+        '''
+    user_entries = []
+    user_html_entries = []
+    for d, user_data in result.items():
+        for u, entries in user_data.items():
+            entries_text = [e.text for e in entries]
+            entries_html = [e.text.replace('\r\n', '<br/>') for e in entries]
+            user_entries.append(user_entry_tmpl.format(u, *entries_text))
+            user_html_entries.append(user_entry_html_tmpl.format(u, *entries_html))
+    final_str = final_tmpl.format(d, '\n'.join(user_entries))
+    final_html_str = final_html_tmpl.format(d, '\n'.join(user_html_entries))
+    subject = subj_tmpl.format(d)
+    return subject, final_str, final_html_str
+
+
+def email_entries(entries, users):
+    result, date_order, user_order = process_entries_query(entries=entries)
+    subject, final_str, final_html_str = construct_email_text(result)
+
+    developers = [u.email for u in users if u.role=='developer']
+    non_developers = [u.email for u in users if u.role == 'non-developer']
+    msg = Message(subject=subject, sender='notifications@madstreetden.com',
+                  recipients=developers, cc=non_developers,
+                  body=final_str, html=final_html_str)
+    mail.send(msg)
+
+
 @app.route('/entry/<path:date>/', methods=['GET', 'POST'])
 @login_required
 def entry(date):
@@ -52,6 +115,9 @@ def entry(date):
                 e = Entry(text=v, entry_type=entry_type, user=user, date=date_obj)
                 db.session.add(e)
             db.session.commit()
+            entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
+            users = User.query.all()
+            email_entries(entries, users)
             return redirect(url_for('entry', date=date))
 
         if date in ('today', 'yesterday'):
