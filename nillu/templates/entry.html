@@ -43,7 +43,7 @@
             <h4>{{ user }}</h4>
             <div class="row">
             {% for entry in result[date][user] %}
-                <div class="col-md-4">{{ entry.text }}</div>
+                <div class="col-md-4">{{ entry.text|nl2br }}</div>
             {% endfor %}
             </div>
             {% endfor %}
