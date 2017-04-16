@@ -7,3 +7,9 @@ SECRET_KEY = '\xbb\xda`\x19\xefP"\xf5\xca\xcc\xe6\xee\r\xdd\x8e\x91\x8d\xf4\xa4\
 #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app.instance_path, 'nillu.db')
 SQLALCHEMY_DATABASE_URI = 'postgresql://nilluuser:foobar@localhost/nilludb'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_USE_TLS = True
+MAIL_PORT = 587
+MAIL_USERNAME = 'username@gmail.com'
+MAIL_PASSWORD = 'password'
