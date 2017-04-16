@@ -37,17 +37,16 @@
     </div> <!-- /container -->
 
     <div class="container">
-        <div class="row">
-            {% for entry in entries %}
-            <div class="col-md-4">{{ entry.text }}</div>
-            {% if loop.index is divisibleby 3 %}
-            </div>
+        {% for date in date_order %}
+        <h3>{{ date }}</h3>
+            {% for user in user_order %}
+            <h4>{{ user }}</h4>
             <div class="row">
-            {% endif %}
+            {% for entry in result[date][user] %}
+                <div class="col-md-4">{{ entry.text }}</div>
             {% endfor %}
             </div>
-        </div>
-
-
+            {% endfor %}
+        {% endfor %}
     </div> <!-- /container -->
 {% endblock %}

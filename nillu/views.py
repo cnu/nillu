@@ -1,3 +1,4 @@
+from collections import defaultdict
 from flask import flash, request, abort, redirect, render_template, url_for
 from flask_login import login_user, login_required, logout_user
 
@@ -34,8 +35,19 @@ def entry(date):
 
         if resolution == 'day':
             # Use only 1 day
-            entries = Entry.query.filter_by(date=date_obj).order_by(Entry.user_id, Entry.type)
-            return render_template('entry.html', entries=entries)
+            entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
+            user_order = set()
+            date_order = set()
+            result = defaultdict(lambda: defaultdict(list))
+            for e in entries:
+                date = e.date
+                user = e.user.name
+                date_order.add(date)
+                user_order.add(user)
+                result[date][user].append(e)
+            date_order = sorted(list(date_order))
+            user_order = sorted(list(user_order))
+            return render_template('entry.html', result=result, date_order=date_order, user_order=user_order)
     except FutureDateException:
         flash("Great Scott! Your flux capacitor is broken.", 'warning')
         return redirect(url_for('entry', date='today'))
