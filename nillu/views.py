@@ -16,6 +16,20 @@ def index():
     return redirect(url_for('entry', date='today'))
 
 
+def process_entries_query(entries):
+    user_order = set()
+    date_order = set()
+    # {date: {user: []}}
+    result = defaultdict(lambda: defaultdict(list))
+    for e in entries:
+        date = e.date
+        user = e.user.name
+        date_order.add(date)
+        user_order.add(user)
+        result[date][user].append(e)
+    date_order = sorted(list(date_order))
+    user_order = sorted(list(user_order))
+    return result, date_order, user_order
 @app.route('/entry/<path:date>/', methods=['GET', 'POST'])
 @login_required
 def entry(date):
@@ -52,17 +66,7 @@ def entry(date):
                 return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users,
                                        entry_types=entry_types)
                 # return redirect(url_for('entry_edit', date=date_obj.strftime('%Y/%m/%d')))
-            user_order = set()
-            date_order = set()
-            result = defaultdict(lambda: defaultdict(list))
-            for e in entries:
-                date = e.date
-                user = e.user.name
-                date_order.add(date)
-                user_order.add(user)
-                result[date][user].append(e)
-            date_order = sorted(list(date_order))
-            user_order = sorted(list(user_order))
+            result, date_order, user_order = process_entries_query(entries)
             return render_template('entry.html', result=result, date_order=date_order, user_order=user_order)
     except FutureDateException:
         flash("Great Scott! Your flux capacitor is broken.", 'warning')
