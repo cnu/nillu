@@ -3,6 +3,7 @@ from flask import flash, request, abort, redirect, render_template, url_for
 from flask_login import login_user, login_required, logout_user
 
 from nillu import app
+from nillu.database import db
 from nillu.forms import LoginForm
 from nillu.models import User, Entry
 from nillu.utils import is_safe_url, DateParseException, FutureDateException, parse_date
@@ -13,6 +14,24 @@ from nillu.utils import is_safe_url, DateParseException, FutureDateException, pa
 def index():
     """Index view function"""
     return redirect(url_for('entry', date='today'))
+
+
+@app.route('/entry/<path:date>/edit/', methods=['GET', 'POST'])
+@login_required
+def entry_edit(date):
+    date_obj, resolution = parse_date(date)
+    if request.method == 'POST':
+        for k, v in request.form.items():
+            user_id, entry_type = k.split('_')
+            user = User.get(user_id=user_id)
+            e = Entry(text=v, entry_type=entry_type, user=user, date=date_obj)
+            db.session.add(e)
+        db.session.commit()
+        return redirect(url_for('entry', date=date))
+    else:
+        users = User.query.filter_by(role='developer').order_by(User.name)
+        entry_types = ('done', 'todo', 'blocking')
+        return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users, entry_types=entry_types)
 
 
 @app.route('/entry/<path:date>/')
