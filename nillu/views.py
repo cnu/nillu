@@ -35,10 +35,10 @@ def entry(date):
             return render_template('entry.html', entries=entries)
     except FutureDateException:
         flash("Great Scott! Your flux capacitor is broken.", 'warning')
-        return redirect(url_for('entries', date='today'))
+        return redirect(url_for('entry', date='today'))
     except DateParseException:
         flash("Couldn't get entries for specified date.", 'danger')
-        return redirect(url_for('entries', date='today'))
+        return redirect(url_for('entry', date='today'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
