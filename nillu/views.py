@@ -1,7 +1,11 @@
+import calendar
 from collections import defaultdict
+
+import datetime
 from flask import flash, request, abort, redirect, render_template, url_for
 from flask_mail import Message
 from flask_login import login_user, login_required, logout_user
+from sqlalchemy import and_
 
 from nillu import app, mail
 from nillu.database import db
@@ -131,9 +135,15 @@ def entry(date):
                 entry_types = ('done', 'todo', 'blocking')
                 return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users,
                                        entry_types=entry_types)
-                # return redirect(url_for('entry_edit', date=date_obj.strftime('%Y/%m/%d')))
-            result, date_order, user_order = process_entries_query(entries)
-            return render_template('entry.html', result=result, date_order=date_order, user_order=user_order)
+        else:
+            if resolution == 'month':
+                _, num_days_in_month = calendar.monthrange(date_obj.year, date_obj.month)
+                end_date = datetime.date(date_obj.year, date_obj.month, num_days_in_month)
+            elif resolution == 'year':
+                end_date = datetime.date(date_obj.year, 12, 31)
+            entries = Entry.query.filter(and_(Entry.date>=date_obj, Entry.date <=end_date))
+        result, date_order, user_order = process_entries_query(entries)
+        return render_template('entry.html', result=result, date_order=date_order, user_order=user_order)
     except FutureDateException:
         flash("Great Scott! Your flux capacitor is broken.", 'warning')
         return redirect(url_for('entry', date='today'))
