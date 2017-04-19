@@ -1,1 +1,1 @@
-web: gunicorn nillu.app
+web: gunicorn wsgi
