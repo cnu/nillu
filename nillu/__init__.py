@@ -7,7 +7,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('settings.py')
+# app.config.from_pyfile('settings.py')
 mail = Mail(app)
 heroku = Heroku(app)
 
