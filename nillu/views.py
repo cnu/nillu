@@ -9,7 +9,7 @@ from sqlalchemy import and_
 
 from nillu import app, mail
 from nillu.database import db
-from nillu.forms import LoginForm
+from nillu.forms import LoginForm, UserAddForm
 from nillu.models import User, Entry
 from nillu.utils import is_safe_url, DateParseException, FutureDateException, parse_date
 
@@ -188,3 +188,20 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect('login')
+
+
+@app.route('/user/add/')
+@login_required
+def user_add():
+    form = UserAddForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        user = User.get_by_email(form.email.data)
+        if user:
+            flash('User with email:{} already exists'.format(form.email.data), 'danger')
+            return redirect(url_for('user_add'))
+        user = User(name=form.name.data, password=form.password.data, email=form.email.data, role=form.role.data)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('user', id=user.id))
+    else:
+        return render_template('user_add.html', form=form)
