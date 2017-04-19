@@ -1,7 +1,7 @@
 {% extends "entry_base.html" %}
 
 {% block container %}
-        <form action="{{ url_for('user_add') }}" method="post">
+        <form action="{{ url_for('user_add') }}" method="post" class="form-useradd">
         {{ form.csrf_token }}
           <div class="form-group">
             <label for="name">Name</label>
