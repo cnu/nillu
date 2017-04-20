@@ -37,7 +37,7 @@ def process_entries_query(entries):
     return result, date_order, user_order
 
 
-def construct_email_text(result):
+def construct_email_text(result, date_order, user_order):
     subj_tmpl = '''Backend Standup - {}'''
     final_tmpl = '''
 Backend Standup - {}
@@ -73,23 +73,25 @@ Backend Standup - <b>{}</b><br/><br/>
         '''
     user_entries = []
     user_html_entries = []
-    for d, user_data in result.items():
-        for u, entries in user_data.items():
+    for date in date_order:
+        for user in user_order:
+            entries = result[date][user]
             entries_text = [e.text for e in entries]
             entries_html = [e.text.replace('\r\n', '<br/>') for e in entries]
-            user_entries.append(user_entry_tmpl.format(u, *entries_text))
-            user_html_entries.append(user_entry_html_tmpl.format(u, *entries_html))
-    final_str = final_tmpl.format(d, '\n'.join(user_entries))
-    final_html_str = final_html_tmpl.format(d, '\n'.join(user_html_entries))
-    subject = subj_tmpl.format(d)
+            user_entries.append(user_entry_tmpl.format(user, *entries_text))
+            user_html_entries.append(user_entry_html_tmpl.format(user, *entries_html))
+
+    final_str = final_tmpl.format(date, '\n'.join(user_entries))
+    final_html_str = final_html_tmpl.format(date, '\n'.join(user_html_entries))
+    subject = subj_tmpl.format(date)
     return subject, final_str, final_html_str
 
 
 def email_entries(entries, users):
     result, date_order, user_order = process_entries_query(entries=entries)
-    subject, final_str, final_html_str = construct_email_text(result)
+    subject, final_str, final_html_str = construct_email_text(result, date_order, user_order)
 
-    developers = [u.email for u in users if u.role=='developer']
+    developers = [u.email for u in users if u.role == 'developer']
     non_developers = [u.email for u in users if u.role == 'non-developer']
     msg = Message(subject=subject, sender='notifications@madstreetden.com',
                   recipients=developers, cc=non_developers,
