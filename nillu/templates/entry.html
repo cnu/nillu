@@ -12,7 +12,7 @@
             </div>
             <div class="row">
             {% for entry in result[date][user] %}
-                <div class="col-md-4">{{ entry.text|nl2br }}</div>
+                <div class="col-md-4">{{ entry.text|markdown|restrict_markdown }}</div>
             {% endfor %}
             </div>
             {% endfor %}
