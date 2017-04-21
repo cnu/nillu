@@ -5,12 +5,12 @@
         <h3>{{ date }}</h3>
             {% for user in user_order %}
             <h4>{{ user }}</h4>
-            <div class="row">
+            <div class="row entry-row">
                 <div class="col-md-4 header">Done</div>
                 <div class="col-md-4 header">Todo</div>
                 <div class="col-md-4 header">Blocking</div>
             </div>
-            <div class="row">
+            <div class="row entry-row">
             {% for entry in result[date][user] %}
                 <div class="col-md-4">{{ entry.text|markdown|restrict_markdown }}</div>
             {% endfor %}

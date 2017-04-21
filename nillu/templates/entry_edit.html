@@ -5,7 +5,7 @@
         <h3>{{ date_obj }}</h3>
             {% for user in users %}
             <h4>{{ user.name }}</h4>
-            <div class="row">
+            <div class="row entry-row">
             {% for entry_type in entry_types %}
                 {% set ta_id = user.id_entry_type %}
                 <div class="col-md-4 form-group">
@@ -15,6 +15,10 @@
             {% endfor %}
             </div>
             {% endfor %}
-        <button class="btn btn-primary" type="submit">Save</button>
+        <div class="row">
+            <div class="col-md-4">
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </div>
         </form>
 {% endblock %}
