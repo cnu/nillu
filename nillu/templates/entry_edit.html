@@ -7,10 +7,9 @@
             <h4>{{ user.name }}</h4>
             <div class="row entry-row">
             {% for entry_type in entry_types %}
-                {% set ta_id = user.id_entry_type %}
                 <div class="col-md-4 form-group">
-                    <label for="{{ ta_id }}">{{ entry_type|capitalize }}</label>
-                    <textarea class="form-control" name="{{ ta_id }}" id="{{ ta_id }}" rows="4" cols="50"></textarea>
+                    <label for="{{ user.id }}_{{ entry_type }}">{{ entry_type|capitalize }}</label>
+                    <textarea class="form-control" name="{{ user.id }}_{{ entry_type }}" id="{{ user.id }}_{{ entry_type }}" rows="4" cols="50"></textarea>
                 </div>
             {% endfor %}
             </div>
