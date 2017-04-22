@@ -1,0 +1,19 @@
+{% extends "entry_base.html" %}
+
+{% block container %}
+    <table class="table form-useradd">
+        <h1 class="form-useradd">User Details</h1>
+        <tr>
+            <th>Name</th>
+            <td>{{ user.name }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+            <th>Role</th>
+            <td>{{ user.role|capitalize }}</td>
+        </tr>
+    </table>
+{% endblock %}

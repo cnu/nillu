@@ -194,6 +194,13 @@ def user_add():
         user = User(name=form.name.data, password=form.password.data, email=form.email.data, role=form.role.data)
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('user', id=user.id))
+        return redirect(url_for('user', user_id=user.id))
     else:
         return render_template('user_add.html', form=form)
+
+
+@app.route('/user/<int:user_id>/')
+@login_required
+def user(user_id):
+    user_obj = User.query.filter_by(id=user_id).first_or_404()
+    return render_template('user.html', user=user_obj)
