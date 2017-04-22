@@ -199,8 +199,14 @@ def user_add():
         return render_template('user_add.html', form=form)
 
 
+@app.route('/user/')
 @app.route('/user/<int:user_id>/')
 @login_required
-def user(user_id):
-    user_obj = User.query.filter_by(id=user_id).first_or_404()
-    return render_template('user.html', user=user_obj)
+def user(user_id=None):
+    if user_id is None:
+        users = User.query.order_by('name')
+        return render_template('users.html', users=users)
+    else:
+        user_obj = User.query.filter_by(id=user_id).first_or_404()
+        return render_template('user.html', user=user_obj)
+

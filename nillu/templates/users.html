@@ -1,0 +1,19 @@
+{% extends "entry_base.html" %}
+
+{% block container %}
+    <h1 class="user-info">Users</h1>
+    <table class="table user-info">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td><a href="{{ url_for('user', user_id=user.id) }}">{{ user.name }}</a></td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role|capitalize }}</td>
+        </tr>
+        {%  endfor %}
+    </table>
+{% endblock %}
