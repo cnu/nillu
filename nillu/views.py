@@ -182,7 +182,7 @@ def logout():
     return redirect('login')
 
 
-@app.route('/user/add/')
+@app.route('/user/add/', methods=['GET', 'POST'])
 @login_required
 def user_add():
     form = UserAddForm()
