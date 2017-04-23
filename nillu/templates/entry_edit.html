@@ -9,7 +9,7 @@
             {% for entry_type in entry_types %}
                 <div class="col-md-4 form-group">
                     <label for="{{ user.id }}_{{ entry_type }}">{{ entry_type|capitalize }}</label>
-                    <textarea class="form-control" name="{{ user.id }}_{{ entry_type }}" id="{{ user.id }}_{{ entry_type }}" rows="4" cols="50"></textarea>
+                    <textarea class="form-control" name="{{ user.id }}_{{ entry_type }}" id="{{ user.id }}_{{ entry_type }}" rows="4" cols="50">{% if edit %}{{ user_entry.get(user.name, {}).get(entry_type, {}).text }}{% endif %}</textarea>
                 </div>
             {% endfor %}
             </div>
@@ -19,5 +19,6 @@
                 <button class="btn btn-primary" type="submit">Save</button>
             </div>
         </div>
+        <input type="hidden" name="edit" value="{{ edit }}" />
         </form>
 {% endblock %}

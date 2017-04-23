@@ -122,11 +122,18 @@ def entry(date):
         if resolution == 'day':
             # Use only 1 day
             entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
+            users = User.query.filter_by(role='developer').order_by(User.name)
+            entry_types = ('done', 'todo', 'blocking')
             if entries.count() == 0:
-                users = User.query.filter_by(role='developer').order_by(User.name)
-                entry_types = ('done', 'todo', 'blocking')
                 return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users,
-                                       entry_types=entry_types)
+                                       entry_types=entry_types, edit=False)
+            else:
+                if request.args.get('edit', 'false').lower() == 'true':
+                    user_entry = defaultdict(dict)
+                    for e in entries:
+                        user_entry[e.user.name][e.type] = e
+                    return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users,
+                                           entry_types=entry_types, user_entry=user_entry, edit=True)
         else:
             if resolution == 'month':
                 _, num_days_in_month = calendar.monthrange(date_obj.year, date_obj.month)
