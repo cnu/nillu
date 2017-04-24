@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
-from wtforms.validators import DataRequired, Email, AnyOf
+from wtforms.validators import DataRequired, Email, AnyOf, EqualTo
 
 
 class LoginForm(FlaskForm):
@@ -16,3 +16,9 @@ class UserAddForm(FlaskForm):
     role = StringField('role', validators=[DataRequired(),
                                            AnyOf(values=['developer', 'non-developer'])
                                            ])
+
+
+class ChangePasswordForm(FlaskForm):
+    password = PasswordField('password', validators=[DataRequired(),
+                                                     EqualTo('confirm_password', message='Passwords do not match')])
+    confirm_password = PasswordField('confirm_password')
