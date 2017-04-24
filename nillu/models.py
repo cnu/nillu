@@ -44,7 +44,13 @@ class User(db.Model, UserMixin):
 
     def update_password(self, new_password):
         """Update the password of a user with a new_password"""
-        self.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        try:
+            self.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+            db.session.add(self)
+            db.session.commit()
+            return True
+        except:
+            return False
 
     def check_password(self, password):
         """Check if the user's password matches with the given password"""
