@@ -5,12 +5,12 @@ import datetime
 from flask import flash, request, abort, redirect, render_template, url_for
 from flask import render_template_string
 from flask_mail import Message
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy import and_
 
 from nillu import app, mail, restrict_markdown
 from nillu.database import db
-from nillu.forms import LoginForm, UserAddForm
+from nillu.forms import LoginForm, UserAddForm, ChangePasswordForm
 from nillu.models import User, Entry
 from nillu.utils import is_safe_url, DateParseException, FutureDateException, parse_date
 
@@ -231,3 +231,19 @@ def user(user_id=None):
         user_obj = User.query.filter_by(id=user_id).first_or_404()
         return render_template('user.html', user=user_obj)
 
+
+@app.route('/password/change/', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        current_user.update_password(new_password=form.password.data)
+        return redirect(url_for('user', user_id=current_user.id))
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(u"Error in the %s field - %s" % (
+                    getattr(form, field).label.text,
+                    error
+                ), 'danger')
+    return render_template('change_password.html', form=form)
