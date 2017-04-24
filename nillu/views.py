@@ -237,13 +237,15 @@ def user(user_id=None):
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        current_user.update_password(new_password=form.password.data)
-        return redirect(url_for('user', user_id=current_user.id))
-    else:
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(u"Error in the %s field - %s" % (
-                    getattr(form, field).label.text,
-                    error
-                ), 'danger')
+        changed = current_user.update_password(new_password=form.password.data)
+        if changed:
+            logout_user()
+            flash(u'Your password has been changed successfully.', 'success')
+            return redirect(url_for('index'))
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ), 'danger')
     return render_template('change_password.html', form=form)
