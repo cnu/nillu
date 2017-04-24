@@ -105,15 +105,29 @@ def entry(date):
     try:
         date_obj, resolution = parse_date(date)
         if request.method == 'POST':
+            if request.form.get('edit').lower() == 'true':
+                edit = True
+            else:
+                edit = False
+
             for k, v in request.form.items():
+                if '_' not in k:
+                    # dont want to try splitting the "edit" hidden input tag.
+                    # TODO: prepend the form text areas with a diff prefix
+                    continue
                 user_id, entry_type = k.split('_')
                 user = User.get(user_id=user_id)
-                e = Entry(text=v, entry_type=entry_type, user=user, date=date_obj)
+                e = Entry.query.filter_by(user=user, date=date_obj, type=entry_type).first()
+                if edit and e:
+                    e.text = v
+                else:
+                    e = Entry(text=v, entry_type=entry_type, user=user, date=date_obj)
                 db.session.add(e)
             db.session.commit()
             entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
             users = User.query.all()
-            email_entries(entries, users)
+            if not edit:
+                email_entries(entries, users)
             return redirect(url_for('entry', date=date))
 
         if date in ('today', 'yesterday'):
@@ -122,11 +136,18 @@ def entry(date):
         if resolution == 'day':
             # Use only 1 day
             entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
+            users = User.query.filter_by(role='developer').order_by(User.name)
+            entry_types = ('done', 'todo', 'blocking')
             if entries.count() == 0:
-                users = User.query.filter_by(role='developer').order_by(User.name)
-                entry_types = ('done', 'todo', 'blocking')
                 return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users,
-                                       entry_types=entry_types)
+                                       entry_types=entry_types, edit=False)
+            else:
+                if request.args.get('edit', 'false').lower() == 'true':
+                    user_entry = defaultdict(dict)
+                    for e in entries:
+                        user_entry[e.user.name][e.type] = e
+                    return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users,
+                                           entry_types=entry_types, user_entry=user_entry, edit=True)
         else:
             if resolution == 'month':
                 _, num_days_in_month = calendar.monthrange(date_obj.year, date_obj.month)
