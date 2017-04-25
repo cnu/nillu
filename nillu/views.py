@@ -110,20 +110,7 @@ def entry(date):
             else:
                 edit = False
 
-            for k, v in request.form.items():
-                if '_' not in k:
-                    # dont want to try splitting the "edit" hidden input tag.
-                    # TODO: prepend the form text areas with a diff prefix
-                    continue
-                user_id, entry_type = k.split('_')
-                user = User.get(user_id=user_id)
-                e = Entry.query.filter_by(user=user, date=date_obj, type=entry_type).first()
-                if edit and e:
-                    e.text = v
-                else:
-                    e = Entry(text=v, entry_type=entry_type, user=user, date=date_obj)
-                db.session.add(e)
-            db.session.commit()
+            save_entry(form_items=request.form.items(), date_obj=date_obj, edit=edit)
             entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
             users = User.query.all()
             if not edit:
@@ -163,6 +150,23 @@ def entry(date):
     except DateParseException:
         flash("Couldn't get entries for specified date.", 'danger')
         return redirect(url_for('entry', date='today'))
+
+
+def save_entry(form_items, date_obj, edit):
+    for k, v in form_items:
+        if '_' not in k:
+            # dont want to try splitting the "edit" hidden input tag.
+            # TODO: prepend the form text areas with a diff prefix
+            continue
+        user_id, entry_type = k.split('_')
+        user = User.get(user_id=user_id)
+        e = Entry.query.filter_by(user=user, date=date_obj, type=entry_type).first()
+        if edit and e:
+            e.text = v
+        else:
+            e = Entry(text=v, entry_type=entry_type, user=user, date=date_obj)
+        db.session.add(e)
+    db.session.commit()
 
 
 @app.route('/login', methods=['GET', 'POST'])
