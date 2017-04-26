@@ -141,7 +141,7 @@ def entry(date):
                 end_date = datetime.date(date_obj.year, date_obj.month, num_days_in_month)
             elif resolution == 'year':
                 end_date = datetime.date(date_obj.year, 12, 31)
-            entries = Entry.query.filter(and_(Entry.date>=date_obj, Entry.date <=end_date))
+            entries = Entry.query.filter(and_(Entry.date >= date_obj, Entry.date <= end_date))
         result, date_order, user_order = process_entries_query(entries)
         return render_template('entry.html', result=result, date_order=date_order, user_order=user_order)
     except FutureDateException:
