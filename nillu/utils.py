@@ -40,6 +40,11 @@ def parse_date(date: str):
     """
     today = datetime.date.today()
     try:
+        if date is None:
+            date_obj = today
+            resolution = 'custom'
+            return date_obj, resolution
+
         if date.lower() == 'today':
             date_obj = today
             resolution = 'day'

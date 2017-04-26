@@ -89,9 +89,10 @@ def email_entries(entries, users):
     mail.send(msg)
 
 
+@app.route('/entry/')
 @app.route('/entry/<path:date>/', methods=['GET', 'POST'])
 @login_required
-def entry(date):
+def entry(date=None):
     """Display the entries for a particular date
 
     :param date: the date for which to get the entries
@@ -141,6 +142,11 @@ def entry(date):
                 end_date = datetime.date(date_obj.year, date_obj.month, num_days_in_month)
             elif resolution == 'year':
                 end_date = datetime.date(date_obj.year, 12, 31)
+            elif resolution == 'custom':
+                start_date = request.args.get('from')
+                date_obj = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = request.args.get('to')
+                end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
             entries = Entry.query.filter(and_(Entry.date >= date_obj, Entry.date <= end_date))
         result, date_order, user_order = process_entries_query(entries)
         return render_template('entry.html', result=result, date_order=date_order, user_order=user_order)
