@@ -170,6 +170,26 @@ def entry_n_days(days):
     return redirect(url_for('entry', **params))
 
 
+@app.route('/entry/email/', methods=['POST'])
+@login_required
+def entry_email():
+    """given a from and to dates, email all the entries."""
+    from_date = request.form['from']
+    to_date = request.form['to']
+    from_date = datetime.datetime.strptime(from_date, '%Y-%m-%d').date()
+    to_date = datetime.datetime.strptime(to_date, '%Y-%m-%d').date()
+    entries = Entry.query.filter(and_(Entry.date >= from_date, Entry.date <= to_date))
+    users = User.query.all()
+    email_entries(entries, users)
+
+    next = request.form.get('next')
+    # is_safe_url should check if the url is safe for redirects.
+    # See http://flask.pocoo.org/snippets/62/ for an example.
+    if not is_safe_url(next):
+        return abort(400)
+    return redirect(next or url_for('index'))
+
+
 def save_entry(form_items, date_obj, edit):
     for k, v in form_items:
         if '_' not in k:
