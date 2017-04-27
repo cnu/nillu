@@ -158,6 +158,16 @@ def entry(date=None):
         return redirect(url_for('entry', date='today'))
 
 
+@app.route('/entry/last/<int:days>/')
+@login_required
+def entry_n_days(days):
+    today = datetime.date.today()
+    delta = datetime.timedelta(days=days)
+    from_date = today - delta
+    params = {'from': from_date, 'to': today}
+    return redirect(url_for('entry', **params))
+
+
 def save_entry(form_items, date_obj, edit):
     for k, v in form_items:
         if '_' not in k:
