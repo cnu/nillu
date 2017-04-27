@@ -17,4 +17,15 @@
             </div>
             {% endfor %}
         {% endfor %}
+    <div class="row entry-row">
+    <div class="col-md-4 col-md-offset-4">
+        <form action="{{ url_for ('entry_email') }}" method="post" class="form-signin">
+            <div style="text-align: center;"><h2 class="form-signin-heading">Email Report to all users</h2></div>
+            <input type="hidden" name="from" id="from" value="{{ from_date }}" />
+            <input type="hidden" name="to" id="to" value="{{ to_date }}" />
+            <input type="hidden" name="next" id="next" value="{{ request.path }}?from={{ request.args['from'] }}&to={{ request.args['to'] }}" />
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Send</button>
+        </form>
+    </div>
+    </div>
 {% endblock %}
