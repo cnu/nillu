@@ -126,6 +126,7 @@ def entry(date=None):
             entries = Entry.query.filter_by(date=date_obj).order_by(Entry.date, Entry.user_id, Entry.type)
             users = User.query.filter_by(role='developer').order_by(User.name)
             entry_types = ('done', 'todo', 'blocking')
+            end_date = date_obj
             if entries.count() == 0:
                 return render_template('entry_edit.html', date=date, date_obj=date_obj, users=users,
                                        entry_types=entry_types, edit=False)
@@ -149,7 +150,8 @@ def entry(date=None):
                 end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
             entries = Entry.query.filter(and_(Entry.date >= date_obj, Entry.date <= end_date))
         result, date_order, user_order = process_entries_query(entries)
-        return render_template('entry.html', result=result, date_order=date_order, user_order=user_order)
+        return render_template('entry.html', result=result, date_order=date_order, user_order=user_order,
+                               from_date=date_obj, to_date=end_date)
     except FutureDateException:
         flash("Great Scott! Your flux capacitor is broken.", 'warning')
         return redirect(url_for('entry', date='today'))
